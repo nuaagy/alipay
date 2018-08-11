@@ -37,7 +37,7 @@ def buy(request, gid):
 
     alipay = AliPay(
         appid=ALIPAY_APPID,  # APPID
-        app_notify_url=None,  # 默认回调url
+        app_notify_url='http://132.232.32.54:8000/orders/',  # 默认回调url
         # app_private_key_path=os.path.join(settings.BASE_DIR, 'keys', 'app_private_key.pem'),  # 应用私钥
         app_private_key_path='keys/app_private_key.pem',  # 应用私钥
         # alipay_public_key_path=os.path.join(settings.BASE_DIR, 'keys', 'alipay_public_key.pem'),  # 支付宝的公钥，验证支付宝回传消息使用，不是你自己的公钥,
