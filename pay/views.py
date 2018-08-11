@@ -51,7 +51,7 @@ def buy(request, gid):
         out_trade_no=order_id,  # 订单号
         total_amount=str(g.price),  # str
         subject=g.name,  # 商品名称
-        return_url=None,  # 重定向
+        return_url='http://132.232.32.54:8000/goods/',  # 重定向
         notify_url=None  # 可选, 不填则使用默认notify url
     )
 
@@ -68,8 +68,8 @@ def check_order(request):
             app_notify_url=None,  # 默认回调url
             app_private_key_path='keys/app_private_key.pem',  # 应用私钥
             alipay_public_key_path='keys/alipay_public_key.pem',  # 支付宝的公钥，验证支付宝回传消息使用，不是你自己的公钥,
-            sign_type="RSA2",  # 签名类型RSA 或 RSA2
-            debug=True  # 默认True沙箱环境/测试化境 False正式环境
+            sign_type="RSA2",  # 签名类型 RSA 或 默认RSA2
+            debug=True  # 默认True沙箱环境/测试环境 False正式环境
         )
 
         from urllib.parse import parse_qs
@@ -105,6 +105,7 @@ def show(request):
         alipay = AliPay(
             appid=ALIPAY_APPID,
             app_notify_url=None,
+            # return_url='http://132.232.32.54:8000/show/',
             app_private_key_path='keys/app_private_key.pem',
             alipay_public_key_path='keys/alipay_public_key.pem',
             sign_type="RSA2",
