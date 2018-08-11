@@ -37,7 +37,7 @@ def buy(request, gid):
 
     alipay = AliPay(
         appid=ALIPAY_APPID,  # APPID
-        app_notify_url='http://132.232.32.54:8000/orders/',  # 默认回调url
+        app_notify_url='http://132.232.32.54:8000/check_order/',  # 默认回调url
         # app_private_key_path=os.path.join(settings.BASE_DIR, 'keys', 'app_private_key.pem'),  # 应用私钥
         app_private_key_path='keys/app_private_key.pem',  # 应用私钥
         # alipay_public_key_path=os.path.join(settings.BASE_DIR, 'keys', 'alipay_public_key.pem'),  # 支付宝的公钥，验证支付宝回传消息使用，不是你自己的公钥,
@@ -51,7 +51,7 @@ def buy(request, gid):
         out_trade_no=order_id,  # 订单号
         total_amount=str(g.price),  # str
         subject=g.name,  # 商品名称
-        return_url='http://132.232.32.54:8000/goods/',  # 重定向
+        return_url='http://132.232.32.54:8000/show/',  # 重定向
         notify_url=None  # 可选, 不填则使用默认notify url
     )
 
@@ -75,11 +75,10 @@ def check_order(request):
         from urllib.parse import parse_qs
 
         body = request.body.decode('utf-8')
+        print('-' * 100)
         print(body)
-
         data = parse_qs(body)
         print(data)
-
         d = {}
         for k, v in data.items():
             d[k] = v
@@ -87,8 +86,8 @@ def check_order(request):
         signature = d.pop('sign')
         success = alipay.verify(data, signature)
         print(signature)
-
-        if success and data['trade_status'] in ("TRADE_SUCCESS", "TRADE_FINISHED" ):
+        print('-' * 100)
+        if success and data['trade_status'] in ("TRADE_SUCCESS", "TRADE_FINISHED"):
 
             out_trade_no = data['out_trade_no']
             models.Order.objects.filter(no=out_trade_no).update(status=2)
@@ -99,13 +98,11 @@ def check_order(request):
         return HttpResponse('只支持POST请求')
 
 
-
 def show(request):
     if request.method == 'GET':
         alipay = AliPay(
             appid=ALIPAY_APPID,
             app_notify_url=None,
-            # return_url='http://132.232.32.54:8000/show/',
             app_private_key_path='keys/app_private_key.pem',
             alipay_public_key_path='keys/alipay_public_key.pem',
             sign_type="RSA2",
@@ -115,7 +112,9 @@ def show(request):
         query_params = request.GET.dict()
         signature = query_params.pop('sign', None)
         status = alipay.verify(query_params, signature)
+        print('-' * 100)
         print(query_params)
+        print('-' * 100)
         return HttpResponse('支付成功') if status else HttpResponse('支付失败')
 
     else:
