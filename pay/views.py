@@ -99,3 +99,29 @@ def check_order(request):
         return HttpResponse('只支持POST请求')
 
 
+
+def show(request):
+    if request.method == 'GET':
+        alipay = AliPay(
+            appid=ALIPAY_APPID,
+            app_notify_url=None,
+            app_private_key_path='keys/app_private_key.pem',
+            alipay_public_key_path='keys/alipay_public_key.pem',
+            sign_type="RSA2",
+            debug=True
+        )
+
+        query_params = request.GET.dict()
+        signature = query_params.pop('sign', None)
+        status = alipay.verify(query_params, signature)
+        print(query_params)
+        return HttpResponse('支付成功') if status else HttpResponse('支付失败')
+
+    else:
+        return HttpResponse('只支持GET请求')
+
+
+def order_list(request):
+    """查看所有订单状态"""
+    orders = models.Order.objects.all()
+    return render(request, 'orders.html', {'orders': orders})
